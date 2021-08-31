@@ -475,10 +475,6 @@ public class ServiceHelper {
     }
 
     V1ServicePort createSipUdpServicePort(String portName, Integer port) {
-      if (isIstioEnabled()) {
-        // The introspector will have already prefixed the portName with either "tcp-" or "tls-". Remove the prefix.
-        portName = portName.substring(4);
-      }
 
       return new V1ServicePort()
           .name("udp-" + LegalNames.toDns1123LegalName(portName))
@@ -957,18 +953,18 @@ public class ServiceHelper {
     void addServicePortIfNeeded(List<V1ServicePort> ports, String channelName, String protocol, Integer internalPort) {
       Channel channel = getChannel(channelName);
 
-      if (channel == null && isIstioEnabled()) {
-        if (channelName != null) {
-          String[] tokens = channelName.split("-");
-          if (tokens.length > 0) {
-            if ("http".equals(tokens[0]) || "https".equals(tokens[0]) || "tcp".equals(tokens[0])
-                  || "tls".equals(tokens[0])) {
-              int index = channelName.indexOf('-');
-              channel = getChannel(channelName.substring(index + 1));
-            }
-          }
-        }
-      }
+      //      if (channel == null && isIstioEnabled()) {
+      //        if (channelName != null) {
+      //          String[] tokens = channelName.split("-");
+      //          if (tokens.length > 0) {
+      //            if ("http".equals(tokens[0]) || "https".equals(tokens[0]) || "tcp".equals(tokens[0])
+      //                  || "tls".equals(tokens[0])) {
+      //              int index = channelName.indexOf('-');
+      //              channel = getChannel(channelName.substring(index + 1));
+      //            }
+      //          }
+      //        }
+      //      }
       if (channel == null || internalPort == null) {
         return;
       }

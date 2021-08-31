@@ -216,7 +216,7 @@ def customizeServerTemplate(topology, template):
   listen_address=env.toDNS1123Legal(domain_uid + "-" + server_name_prefix + "${id}")
   setServerListenAddress(template, listen_address)
   customizeNetworkAccessPoints(template, listen_address)
-  customizeManagedIstioNetworkAccessPoint(template, listen_address)
+  #customizeManagedIstioNetworkAccessPoint(template, listen_address)
   if (getCoherenceClusterSystemResourceOrNone(topology, template) is not None):
     customizeCoherenceMemberConfig(template, listen_address)
 
@@ -307,7 +307,7 @@ def customizeServer(model, server, name):
   customizeDefaultFileStore(server)
   setServerListenAddress(server, listen_address)
   customizeNetworkAccessPoints(server,listen_address)
-  customizeServerIstioNetworkAccessPoint(server, listen_address)
+  #customizeServerIstioNetworkAccessPoint(server, listen_address)
   if (getCoherenceClusterSystemResourceOrNone(model['topology'], server) is not None):
     customizeCoherenceMemberConfig(server, listen_address)
 
@@ -536,9 +536,9 @@ def customizeNetworkAccessPoint(nap, listen_address):
   if 'ListenAddress' in nap:
     original_listen_address = nap['ListenAddress']
     if len(original_listen_address) > 0:
-      if istio_enabled == 'true':
-        nap['ListenAddress'] = '127.0.0.1'
-      else:
+      # if istio_enabled == 'true':
+      #   nap['ListenAddress'] = '127.0.0.1'
+      # else:
         nap['ListenAddress'] = listen_address
 
 

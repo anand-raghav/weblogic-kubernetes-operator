@@ -285,9 +285,7 @@ public abstract class JobStepContext extends BasePodStepContext {
           .putLabelsItem(LabelConstants.DOMAINUID_LABEL, getDomainUid())
           .putLabelsItem(
                 LabelConstants.JOBNAME_LABEL, LegalNames.toJobIntrospectorName(getDomainUid()));
-    if (isIstioEnabled()) {
-      metadata.putAnnotationsItem("sidecar.istio.io/inject", "false");
-    }
+    metadata.putAnnotationsItem("sidecar.istio.io/inject", "false");
     return metadata;
   }
 
