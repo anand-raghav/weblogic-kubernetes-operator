@@ -412,11 +412,14 @@ public class ServiceHelper {
       for (NetworkAccessPoint networkAccessPoint : getNetworkAccessPoints(serverConfig)) {
         addNapServicePort(ports, networkAccessPoint);
       }
-      if (!isIstioEnabled()) {
-        addServicePortIfNeeded(ports, "default", serverConfig.getListenPort());
-        addServicePortIfNeeded(ports, "default-secure", serverConfig.getSslListenPort());
-        addServicePortIfNeeded(ports, "default-admin", serverConfig.getAdminPort());
-      }
+      //      if (!isIstioEnabled()) {
+      //        addServicePortIfNeeded(ports, "default", serverConfig.getListenPort());
+      //        addServicePortIfNeeded(ports, "default-secure", serverConfig.getSslListenPort());
+      //        addServicePortIfNeeded(ports, "default-admin", serverConfig.getAdminPort());
+      //      }
+      addServicePortIfNeeded(ports, "default", serverConfig.getListenPort());
+      addServicePortIfNeeded(ports, "default-secure", serverConfig.getSslListenPort());
+      addServicePortIfNeeded(ports, "default-admin", serverConfig.getAdminPort());
 
       Optional.ofNullable(getDomain().getMonitoringExporterSpecification()).ifPresent(specification -> {
         if (specification.getConfiguration() != null) {

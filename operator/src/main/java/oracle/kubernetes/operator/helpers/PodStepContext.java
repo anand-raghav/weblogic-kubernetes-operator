@@ -277,11 +277,10 @@ public abstract class PodStepContext extends BasePodStepContext {
     List<V1ContainerPort> ports = new ArrayList<>();
     getNetworkAccessPoints(scan).forEach(nap -> addContainerPort(ports, nap));
 
-    if (!getDomain().isIstioEnabled()) { // if Istio enabled, the following were added to the NAPs by introspection.
-      addContainerPort(ports, "default", getListenPort(), "TCP");
-      addContainerPort(ports, "default-secure", getSslListenPort(), "TCP");
-      addContainerPort(ports, "default-admin", getAdminPort(), "TCP");
-    }
+    addContainerPort(ports, "default", getListenPort(), "TCP");
+    addContainerPort(ports, "default-secure", getSslListenPort(), "TCP");
+    addContainerPort(ports, "default-admin", getAdminPort(), "TCP");
+
 
     return ports;
   }
@@ -983,18 +982,24 @@ public abstract class PodStepContext extends BasePodStepContext {
 
     try {
       boolean istioEnabled = getDomain().isIstioEnabled();
-      if (istioEnabled) {
-        int istioReadinessPort = getDomain().getIstioReadinessPort();
-        readinessProbe =
-            readinessProbe.httpGet(httpGetAction(READINESS_PATH, istioReadinessPort, false));
-      } else {
-        readinessProbe =
-            readinessProbe.httpGet(
-                httpGetAction(
-                    READINESS_PATH,
-                    getLocalAdminProtocolChannelPort(),
-                    isLocalAdminProtocolChannelSecure()));
-      }
+      readinessProbe =
+          readinessProbe.httpGet(
+              httpGetAction(
+                  READINESS_PATH,
+                  getLocalAdminProtocolChannelPort(),
+                  isLocalAdminProtocolChannelSecure()));
+      //      if (istioEnabled) {
+      //        int istioReadinessPort = getDomain().getIstioReadinessPort();
+      //        readinessProbe =
+      //            readinessProbe.httpGet(httpGetAction(READINESS_PATH, istioReadinessPort, false));
+      //      } else {
+      //        readinessProbe =
+      //            readinessProbe.httpGet(
+      //                httpGetAction(
+      //                    READINESS_PATH,
+      //                    getLocalAdminProtocolChannelPort(),
+      //                    isLocalAdminProtocolChannelSecure()));
+      //      }
     } catch (Exception e) {
       // do nothing
     }
