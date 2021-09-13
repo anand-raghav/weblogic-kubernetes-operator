@@ -438,13 +438,11 @@ public final class Fiber implements Runnable, ComponentRegistry, AsyncFiber, Bre
 
       LOGGER.finer(CURRENT_STEPS, na.next);
 
-      if (LOGGER.isFinerEnabled()) {
-        LOGGER.finer(
-            "{0} {1}.apply({2})",
-            getName(),
-            na.next,
-            na.packet != null ? "Packet@" + Integer.toHexString(na.packet.hashCode()) : "null");
-      }
+      LOGGER.info(
+          "REG-> {0} {1}.apply({2})",
+          getName(),
+          na.next,
+          na.packet != null ? "Packet@" + Integer.toHexString(na.packet.hashCode()) : "null");
 
       addBreadCrumb(na);
 
