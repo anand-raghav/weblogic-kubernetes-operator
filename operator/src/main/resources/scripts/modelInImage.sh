@@ -694,9 +694,6 @@ function createPrimordialDomain() {
       gunzip ${DECRYPTED_MERGED_MODEL}.gz  || exitOrLoop
     fi
 
-    trace "REG-> wdt ${WDT_VERSION} online min ${WDT_ONLINE_MIN_VERSION}"
-    trace "REG-> new: ${NEW_MERGED_MODEL}"
-    trace "REG-> old: ${DECRYPTED_MERGED_MODEL}"
     if  versionGE ${WDT_VERSION} ${WDT_ONLINE_MIN_VERSION} ; then
       diff_model ${NEW_MERGED_MODEL} ${DECRYPTED_MERGED_MODEL}
     else

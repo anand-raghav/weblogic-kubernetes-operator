@@ -356,7 +356,7 @@ public class AsyncRequestStep<T> extends Step implements RetryStrategyListener {
 
   private void logAsyncRequest() {
     // called from the apply method where we have the necessary information for logging context
-    LOGGER.finer(
+    LOGGER.info(
         MessageKeys.ASYNC_REQUEST,
         identityHash(),
         requestParams.call,
