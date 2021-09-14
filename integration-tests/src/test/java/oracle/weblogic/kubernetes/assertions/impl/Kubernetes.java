@@ -6,11 +6,14 @@ package oracle.weblogic.kubernetes.assertions.impl;
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
@@ -22,6 +25,7 @@ import io.kubernetes.client.openapi.models.V1Container;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentCondition;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
+import io.kubernetes.client.openapi.models.V1DeploymentStatus;
 import io.kubernetes.client.openapi.models.V1Job;
 import io.kubernetes.client.openapi.models.V1JobCondition;
 import io.kubernetes.client.openapi.models.V1JobList;
@@ -659,22 +663,21 @@ public class Kubernetes {
   public static boolean isDeploymentReady(String deploymentName,
                                           Map<String, String> label,
                                           String namespace) throws ApiException {
-    boolean status = false;
-    V1Deployment deployment = getDeployment(deploymentName, label, namespace);
-    if (deployment != null) {
-      // get the deploymentCondition with the 'Available' type field
-      V1DeploymentCondition v1DeploymentRunningCondition = deployment.getStatus().getConditions().stream()
-          .filter(v1DeploymentCondition -> "Available".equals(v1DeploymentCondition.getType()))
-          .findAny()
-          .orElse(null);
+    return getDeploymentConditions(deploymentName, label, namespace).stream()
+          .anyMatch(Kubernetes::isDomainCompletelyReady);
+  }
 
-      if (v1DeploymentRunningCondition != null) {
-        status = v1DeploymentRunningCondition.getStatus().equalsIgnoreCase("true");
-      }
-    } else {
-      getLogger().info("Deployment doesn't exist");
-    }
-    return status;
+  @Nonnull
+  private static List<V1DeploymentCondition>
+      getDeploymentConditions(String deploymentName, Map<String, String> label, String namespace) throws ApiException {
+    return Optional.ofNullable(getDeployment(deploymentName, label, namespace))
+          .map(V1Deployment::getStatus)
+          .map(V1DeploymentStatus::getConditions)
+          .orElse(Collections.emptyList());
+  }
+
+  private static boolean isDomainCompletelyReady(V1DeploymentCondition condition) {
+    return "Completed".equals(condition.getType()) && "True".equalsIgnoreCase(condition.getStatus());
   }
 
   /**
