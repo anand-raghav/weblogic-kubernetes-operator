@@ -290,12 +290,27 @@ createFolder ${DOMAIN_HOME}/servers/${SERVER_NAME}/security
 copyIfChanged /weblogic-operator/introspector/boot.properties \
               ${DOMAIN_HOME}/servers/${SERVER_NAME}/security/boot.properties
 
+# remove write and execute permissions for group to prevent insecure file system warnings.
+chmod g-wx  ${DOMAIN_HOME}/servers/${SERVER_NAME}/security/boot.properties
+
+
 if [ ${DOMAIN_SOURCE_TYPE} != "FromModel" ]; then
   trace "Copying situational configuration files from operator cm to ${DOMAIN_HOME}/optconfig directory"
   copySitCfgWhileBooting /weblogic-operator/introspector ${DOMAIN_HOME}/optconfig             'Sit-Cfg-CFG--'
   copySitCfgWhileBooting /weblogic-operator/introspector ${DOMAIN_HOME}/optconfig/jms         'Sit-Cfg-JMS--'
   copySitCfgWhileBooting /weblogic-operator/introspector ${DOMAIN_HOME}/optconfig/jdbc        'Sit-Cfg-JDBC--'
   copySitCfgWhileBooting /weblogic-operator/introspector ${DOMAIN_HOME}/optconfig/diagnostics 'Sit-Cfg-WLDF--'
+else
+  if [[ ${KUBERNETES_PLATFORM^^} == "OPENSHIFT" ]]; then
+    # Operator running on Openshift platform - change file permissions in the DOMAIN_HOME dir to give
+    # group same permissions as user .
+    chmod -R g=u ${DOMAIN_HOME} || return 1
+  fi
+fi
+
+if [[ ${KUBERNETES_PLATFORM^^} == "OPENSHIFT" ]]; then
+    # When the Operator is running on Openshift platform, disable insecure file system warnings.
+    export JAVA_OPTIONS="-Dweblogic.SecureMode.WarnOnInsecureFileSystem=false $JAVA_OPTIONS"
 fi
 
 #
