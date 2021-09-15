@@ -277,7 +277,8 @@ public class OperatorUtils {
         .helmParams(opHelmParams)
         .imagePullSecrets(secretNameMap)
         .domainNamespaces(Arrays.asList(domainNamespace))
-        .serviceAccount(opServiceAccount);
+        .serviceAccount(opServiceAccount)
+        .kubernetesPlatform("Openshift");
 
     if (domainNamespaceSelectionStrategy != null) {
       opParams.domainNamespaceSelectionStrategy(domainNamespaceSelectionStrategy);
